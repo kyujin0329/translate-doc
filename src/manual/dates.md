@@ -87,13 +87,9 @@ julia> for i = 1:10^5
 
 구문 분석과 지정된 테스트 및 예제 전체들을 [`tests/dates/io.jl`](https://github.com/JuliaLang/julia/blob/master/test/dates/io.jl).
 
-## Durations/Comparisons
+## 기간/비교
 
-Finding the length of time between two [`Date`](@ref) or [`DateTime`](@ref) is straightforward
-given their underlying representation as `UTInstant{Day}` and `UTInstant{Millisecond}`, respectively.
-The difference between [`Date`](@ref) is returned in the number of [`Day`](@ref), and [`DateTime`](@ref)
-in the number of [`Millisecond`](@ref). Similarly, comparing [`TimeType`](@ref) is a simple matter
-of comparing the underlying machine instants (which in turn compares the internal [`Int64`](@ref) values).
+[`Date`](@ref) 또는 [`DateTime`](@ref) 사이 간격을 찾는 것은 각각 `UTInstant{Day}`와 `UTInstant{Millisecond}`같은 기본 표현을 사용하면 간단합니다. [`Date`](@ref)는 [`Day`](@ref)의 수로 반환되고, [`DateTime`](@ref)은 [`Millisecond`](@ref)로 반환되는 차이가 있습니다. 마찬가지로, [`TimeType`](@ref)을 비교하는 것은 기본 컴퓨터 인스턴트(차례대로 내부 [`Int64`](@ref)값을 비교하는 것)를 비교하는 간단한 문제입니다.
 
 ```jldoctest
 julia> dt = Date(2012,2,29)

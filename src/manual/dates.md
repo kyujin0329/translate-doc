@@ -13,10 +13,9 @@ ISO 8601표준은 BC/BCE 날짜와 관련이 있습니다. 일반적으로, 마�
 [^1]:
     UT초의 개념은 사실 아주 기초적인 것입니다. 기본적으로 받아들여진 지구의 물리적 회전(1회전=1일)과 IS초(상수 값)에 기초를 할 개념 두가지가 일반적으로 받아들여집니다.이들은 근본적으로 다릅니다! 생각해보세요, "UT초"는 지구의 회전과 관련있기 때문에 하루에 따라 절대길이가 달라질 수 있습니다! [`Date`](@ref)와 [`DateTime`](@ref)이 UT초를 기반으로 한다는 사실은 단순하지만, 명확한 전제임으로 윤초 같은 복잡한 것들을 피할 수 있습니다. 이 시간의 기준은 공식적으로 [UT](https://en.wikipedia.org/wiki/Universal_Time)또는 UT1이라고 합니다. UT초의 기본타입은 기본적으로 1분마다 60초가 걸리고 하루 24시간이 걸리는 것을 의미하고, 달력날짜를 작업할 때 더 자연스러운 계산을 유도합니다.
 
-## Constructors
+## 생성자
 
-[`Date`](@ref) and [`DateTime`](@ref) types can be constructed by integer or [`Period`](@ref)
-types, by parsing, or through adjusters (more on those later):
+[`Date`](@ref) 와 [`DateTime`](@ref) 타입은 정수 또는 [`Period`](@ref) 타입, parsing 또는 adjusters를 통해 생성할 수 있습니다. (자세한 내용은 나중에):
 
 ```jldoctest
 julia> DateTime(2013)
@@ -56,32 +55,17 @@ julia> Date(Dates.Month(7),Dates.Year(2013))
 2013-07-01
 ```
 
-[`Date`](@ref) or [`DateTime`](@ref) parsing is accomplished by the use of format strings. Format
-strings work by the notion of defining *delimited* or *fixed-width* "slots" that contain a period
-to parse and passing the text to parse and format string to a [`Date`](@ref) or [`DateTime`](@ref)
-constructor, of the form `Date("2015-01-01","y-m-d")` or `DateTime("20150101","yyyymmdd")`.
+[`Date`](@ref) 또는 [`DateTime`](@ref) 구문 분석은 문자열 형식을 사용해서 수행합니다. 문자열 형식은 구문 분석 할 마침표가 포함되고 *구분*되거나 *고정된 폭*의 "슬롯"을 정의하고, [`Date`](@ref) 또는 [`DateTime`](@ref) 생성자, 즉 `Date("2015-01-01","y-m-d")` 또는 `DateTime("20150101","yyyymmdd")` 형식으로 구문 분석 할 문자열 형식을 본문에 전달하는 개념으로 작동한다. 
 
-Delimited slots are marked by specifying the delimiter the parser should expect between two subsequent
-periods; so `"y-m-d"` lets the parser know that between the first and second slots in a date string
-like `"2014-07-16"`, it should find the `-` character. The `y`, `m`, and `d` characters let the
-parser know which periods to parse in each slot.
+구분 된 슬롯은 구문 분석기가 두 개의 subsequent 마침표 사이에 예상되는 구분 기호를 지정하여 표시합니다; 그래서 `"y-m-d"`의 구문 분석기는 첫번째와 두번째 슬롯 사이의 문자열에서 `"2014-07-16"`의 `-`문자를 찾아야 한다. `y`,`m`,`d` 문자는 구문 분석기가 각 슬롯에 구문 분석해야하는 기간을 알려준다. 
 
-Fixed-width slots are specified by repeating the period character the number of times corresponding
-to the width with no delimiter between characters. So `"yyyymmdd"` would correspond to a date
-string like `"20140716"`. The parser distinguishes a fixed-width slot by the absence of a delimiter,
-noting the transition `"yyyymm"` from one period character to the next.
+고정된 폭의 슬롯은 문자사이에 마침표가 없는 시간에 해당하는 횟수만큼 마침표를  반복해서 지정합니다. 그래서 `"yyyymmdd"`는 `"20140716"`같은 날짜 문자열과 일치합니다. 구문 분석기는 한 마침표 문자부터 다음 마침표까지 `"yyyymm"`의 변화에 주의하고, 구분기호가 없으면 고정된 넓이의 슬롯을 구별합니다. 
 
-Support for text-form month parsing is also supported through the `u` and `U` characters, for
-abbreviated and full-length month names, respectively. By default, only English month names are
-supported, so `u` corresponds to "Jan", "Feb", "Mar", etc. And `U` corresponds to "January", "February",
-"March", etc. Similar to other name=>value mapping functions [`dayname`](@ref) and [`monthname`](@ref),
-custom locales can be loaded by passing in the `locale=>Dict{String,Int}` mapping to the `MONTHTOVALUEABBR`
-and `MONTHTOVALUE` dicts for abbreviated and full-name month names, respectively.
+달의 문자 형식 분석은 `u`와 `U` 문자를 통해서 단축된 월의 이름과 전체길이 월의 이름을 각각 지원합니다. 그래서 `u`는 "Jan", "Feb", "Mar" 등등에 해당합니다. `U`는 "January", "February",
+"March" 등등에 해당합니다. 다른 이름=>변수 매핑 함수 [`dayname`](@ref) 과 [`monthname`](@ref)과 비슷하게, 사용자 정의 locales는 `locale=>용어{String,Int}`를 매핑해서 `MONTHTOVALUEABBR`
+와 `MONTHTOVALUE` 용어를 단축된 달의 이름과 전체길이의 달의 이름으로 각각 전달해서 불러올 수 있습니다.
 
-One note on parsing performance: using the `Date(date_string,format_string)` function is fine
-if only called a few times. If there are many similarly formatted date strings to parse however,
-it is much more efficient to first create a [`Dates.DateFormat`](@ref), and pass it instead of
-a raw format string.
+구문 분석의 성능에 주의할 점 : `Date(date_string,format_string)` 함수를 사용하면 몇번만 호출해도 괜찮습니다. 하지만 구문 분석 할 비슷한 형식의 날짜 문자열이 많은 경우, [`Dates.DateFormat`](@ref)형식을 먼저 생성한 후 초기 형식 문자열을 대신 전달하는 것이 훨씬 더 효율적입니다. 
 
 ```jldoctest
 julia> df = DateFormat("y-m-d");
@@ -93,7 +77,7 @@ julia> dt2 = Date("2015-01-02",df)
 2015-01-02
 ```
 
-You can also use the `dateformat""` string macro. This macro creates the `DateFormat` object once when the macro is expanded and uses the same `DateFormat` object even if a code snippet is run multiple times.
+`dateformat""` 문자열 매크로를 사용할 수 있습니다. 이 매크로는 확장될 때 `DateFormat`객체가 확장될 대 한 번 생성하고, 여러번 실행될 때에도 같은 `DateFormat`객체를 사용합니다.
 
 ```jldoctest
 julia> for i = 1:10^5
@@ -101,7 +85,7 @@ julia> for i = 1:10^5
        end
 ```
 
-A full suite of parsing and formatting tests and examples is available in [`tests/dates/io.jl`](https://github.com/JuliaLang/julia/blob/master/test/dates/io.jl).
+구문 분석과 지정된 테스트 및 예제 전체들을 [`tests/dates/io.jl`](https://github.com/JuliaLang/julia/blob/master/test/dates/io.jl).
 
 ## Durations/Comparisons
 

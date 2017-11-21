@@ -1,41 +1,17 @@
-# Date and DateTime
+# Date 와 DateTime
 
 ```@meta
 CurrentModule = Base.Dates
 ```
+`dates`모듈은 날짜와 함께 작업할 수 있는 [`Date`](@ref)와 [`DateTime`](@ref) 두가지 유형을 제공한다. 모두 추상적인 [`TimeType`](@ref)의 하위 유형으로 각각 하루와 밀리 초 단위의 정확도를 제공한다. 유형을 구별한 동기는 간단하다: 코드 및 정신적 추론 측면에서 더 큰 정밀도의 복잡성을 처리 할 필요가 없는 일부 작업이 보다 간단해진다. 예를 들어, [`Date`](@ref) 유형은 오직 한 날짜의 정확도(즉, 어떤 시간, 분, 초가 아닌)로만 결정하기 때문에 표준시간대, 일광 절약 시간/서머타임, 윤초에 대한 일반적인 고려 사항은 필요하지 않다.
 
-The `Dates` module provides two types for working with dates: [`Date`](@ref) and [`DateTime`](@ref),
-representing day and millisecond precision, respectively; both are subtypes of the abstract [`TimeType`](@ref).
-The motivation for distinct types is simple: some operations are much simpler, both in terms of
-code and mental reasoning, when the complexities of greater precision don't have to be dealt with.
-For example, since the [`Date`](@ref) type only resolves to the precision of a single date (i.e.
-no hours, minutes, or seconds), normal considerations for time zones, daylight savings/summer
-time, and leap seconds are unnecessary and avoided.
-
-Both [`Date`](@ref) and [`DateTime`](@ref) are basically immutable [`Int64`](@ref) wrappers.
-The single `instant` field of either type is actually a `UTInstant{P}` type, which
-represents a continuously increasing machine timeline based on the UT second [^1]. The
-[`DateTime`](@ref) type is not aware of time zones (*naive*, in Python parlance),
-analogous to a *LocalDateTime* in Java 8. Additional time zone functionality
-can be added through the [TimeZones.jl package](https://github.com/JuliaTime/TimeZones.jl/), which
-compiles the [IANA time zone database](http://www.iana.org/time-zones). Both [`Date`](@ref) and
-[`DateTime`](@ref) are based on the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) standard, which follows the proleptic Gregorian calendar.
-One note is that the ISO 8601 standard is particular about BC/BCE dates. In general, the last
-day of the BC/BCE era, 1-12-31 BC/BCE, was followed by 1-1-1 AD/CE, thus no year zero exists.
-The ISO standard, however, states that 1 BC/BCE is year zero, so `0000-12-31` is the day before
-`0001-01-01`, and year `-0001` (yes, negative one for the year) is 2 BC/BCE, year `-0002` is 3
-BC/BCE, etc.
+[`Date`](@ref)와 [`DateTime`](@ref)은 둘 다 기본적으로 변경할 수 없는 [`Int64`](@ref)래퍼 입니다. 두 타입 중 하나의 `instant`필드는 실제로 UT second [^1]를 기반으로 계속 증가하는 시간대를 나타내는 `UTInstant{p}`타입이다. 
+[`DateTime`](@ref)은 Java8의 *LocalDateTime*과 유사한 시간대(*즉*, Phython 언어로 된)를 인식하지 못합니다.
+부가직인 시간대의 기능을 [IANA time zone database](http://www.inan.org/time-zones)를 컴파일하는 [TimeZones.jl package](https://github.com/JuliaTiem/TimeZones.jl/) 패키지를 통해서 추가할 수 있습니다. [`Date`](@ref)와 [`DateTime`](@ref)은 [ISO 8601](https://enwikipedia.org/wiki/ISO_8601)표준으로, 그레고리력을 따르고 있습니다.
+ISO 8601표준은 BC/BCE 날짜와 관련이 있습니다. 일반적으로, 마지막 날인 1-12-31 BC/BCE 다음날은 1-1-1 AD/CE으로 이어집니다. 그래서 0년은 존재하지 않습니다. 하지만 ISO표준은 1 BC/BCE의 년도를 0으로 표기합니다. 그래서 `0001-01-01`이전은 `0000-12-31`이고, 2 BC/BCE는 `-0001`(음수 1), 3 BC/BCE은 `-0002`년으로 표기합니다.
 
 [^1]:
-    The notion of the UT second is actually quite fundamental. There are basically two different notions
-    of time generally accepted, one based on the physical rotation of the earth (one full rotation
-    = 1 day), the other based on the SI second (a fixed, constant value). These are radically different!
-    Think about it, a "UT second", as defined relative to the rotation of the earth, may have a different
-    absolute length depending on the day! Anyway, the fact that [`Date`](@ref) and [`DateTime`](@ref)
-    are based on UT seconds is a simplifying, yet honest assumption so that things like leap seconds
-    and all their complexity can be avoided. This basis of time is formally called [UT](https://en.wikipedia.org/wiki/Universal_Time)
-    or UT1. Basing types on the UT second basically means that every minute has 60 seconds and every
-    day has 24 hours and leads to more natural calculations when working with calendar dates.
+    UT초의 개념은 사실 아주 기초적인 것입니다. 기본적으로 받아들여진 지구의 물리적 회전(1회전=1일)과 IS초(상수 값)에 기초를 할 개념 두가지가 일반적으로 받아들여집니다.이들은 근본적으로 다릅니다! 생각해보세요, "UT초"는 지구의 회전과 관련있기 때문에 하루에 따라 절대길이가 달라질 수 있습니다! [`Date`](@ref)와 [`DateTime`](@ref)이 UT초를 기반으로 한다는 사실은 단순하지만, 명확한 전제임으로 윤초 같은 복잡한 것들을 피할 수 있습니다. 이 시간의 기준은 공식적으로 [UT](https://en.wikipedia.org/wiki/Universal_Time)또는 UT1이라고 합니다. UT초의 기본타입은 기본적으로 1분마다 60초가 걸리고 하루 24시간이 걸리는 것을 의미하고, 달력날짜를 작업할 때 더 자연스러운 계산을 유도합니다.
 
 ## Constructors
 
